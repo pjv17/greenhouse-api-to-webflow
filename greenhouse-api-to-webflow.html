@@ -1,7 +1,7 @@
 
 <script>
 jQuery(document).ready(function($){
-$.getJSON('https://boards-api.greenhouse.io/v1/boards/frequence/departments/', function(data) {
+$.getJSON('https://boards-api.greenhouse.io/v1/boards/{board_token}/departments/', function(data) {
         var output = '';
         var departments ='<option value="">All Departments</option>';
         $.each(data.departments, function(key, value) {
@@ -28,7 +28,7 @@ $.getJSON('https://boards-api.greenhouse.io/v1/boards/frequence/departments/', f
         
 });
 $('.filter-department, select.filter-location, input.filter-search').on('change keyup', function() {
-  $.getJSON('https://boards-api.greenhouse.io/v1/boards/frequence/departments/', function(data) {
+  $.getJSON('https://boards-api.greenhouse.io/v1/boards/{board_token}/departments/', function(data) {
   const search_term = $('input.filter-search').val().toString();
   const search = search_term.toUpperCase();
   const getDepartments = $('select.filter-department').val().toString();
