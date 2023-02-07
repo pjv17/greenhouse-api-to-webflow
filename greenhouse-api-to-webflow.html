@@ -1,0 +1,138 @@
+
+<script>
+jQuery(document).ready(function($){
+$.getJSON('https://boards-api.greenhouse.io/v1/boards/frequence/departments/', function(data) {
+        var output = '';
+        var departments ='<option value="">All Departments</option>';
+        $.each(data.departments, function(key, value) {
+				if(value.jobs.length > 0){
+            departments += '<option value="'+value.id+'">'+value.name+'</option>';
+            output += '<div class="accordion-contianer">';
+                 output += "<button class='accordion'>" + value.name + " <svg height='30' width='30' style='position: absolute;top: -15px;right: -24px;font-size: 20px;'>  <circle cx='10' cy='15' r='4' stroke='#f54036' stroke-width='2' fill='transparent'></circle>  Sorry, your browser does not support inline SVG.  </svg></button>";
+                 output += '<div class="panel">';
+                $.each(value.jobs, function(key, value) {
+                  output += '<div class="job-title"><a target="_blank" href="'+value.absolute_url+'">' + value.title + '</a></div>';
+                  output += '<div class="job-location">' + value.location.name + '</div>';
+            });
+             output += '</div>';
+             output += '</div>';
+        	}
+          });
+          
+          $('#root').html(output);
+          $('select.filter-department').html(departments);
+          $('.accordion').on("click", function() {
+            $(this).toggleClass("active");
+            $(this).next().slideToggle(200);
+          });
+        
+});
+$('.filter-department, select.filter-location, input.filter-search').on('change keyup', function() {
+  $.getJSON('https://boards-api.greenhouse.io/v1/boards/frequence/departments/', function(data) {
+  const search_term = $('input.filter-search').val().toString();
+  const search = search_term.toUpperCase();
+  const getDepartments = $('select.filter-department').val().toString();
+  const getLocations = $('select.filter-location').val().toString();
+
+    const matches = data.departments.filter(department => {
+      const dept_name = department.id.toString().toUpperCase().indexOf(getDepartments) >= 0;
+      const job_location = department.jobs.some(job=> job.location.name.indexOf(getLocations) >= 0); 
+      const search_job_data = ( department.jobs.some(job => job.title.toUpperCase().indexOf(search) >= 0) ||  department.jobs.some(job=> job.location.name.indexOf(search) >= 0) || department.id.toString().toUpperCase().indexOf(search) >= 0 ); 
+      return dept_name && job_location && search_job_data;
+    });
+    var output = '';
+		if(matches.length > 0){
+      $.each(matches, function(key, value) {       
+        output += '<div class="accordion-contianer">';
+        output += "<button class='accordion active'>" + value.name + " <svg height='30' width='30' style='position: absolute;top: -15px;right: -24px;font-size: 20px;'>  <circle cx='10' cy='15' r='4' stroke='#f54036' stroke-width='2' fill='transparent'></circle>  Sorry, your browser does not support inline SVG.  </svg></button>";
+        output += '<div class="panel" style="display: block;">';
+        $.each(value.jobs, function(key, value) {
+        	if(value.location.name.includes(getLocations)){
+            output += '<div class="job-title"><a target="_blank" href="'+value.absolute_url+'">' + value.title + '</a></div>';
+            output += '<div class="job-location">' + value.location.name + '</div>';
+          }
+          
+        });
+        output += '</div>';
+        output += '</div>';
+      });
+    }else{
+     output += '<div class="accordion-contianer">';
+     output += '<h2>Sorry, no jobs were found for that criteria.</h2>';
+     output += '</div>';
+    }
+    
+    $('#root').html(output);
+    $('.accordion').on("click", function() {
+      $(this).toggleClass("active");
+      $(this).next().slideToggle(200);
+    });
+  });
+});
+});
+</script>
+<style>
+#root .accordion {
+    background-color: #fff;
+    color: #444;
+    cursor: pointer;
+    padding: 1.5rem 0;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    transition: 0.4s;
+    border-top: 3px solid #f54036;
+    font-size: 1.5rem;
+		position: relative;
+    font-weight: 700;
+}
+#root .active, #root .accordion:hover {
+    background-color: #fff;
+}
+#root .panel {
+  padding: 0 18px;
+  background-color: white;
+  display: none;
+  overflow: hidden;
+}
+#root .accordion:after {
+  /* Unicode character for “plus” sign (+) */
+  content: url('https://uploads-ssl.webflow.com/637c2f301f6fd3d4dd877342/63e194d2923b771d2bb7bb43_down-orange.png');
+  font-size: 13px;
+  color: #777;
+  float: right;
+  margin-left: 5px;
+}
+#root .active:after {
+  /* Unicode character for “minus” sign (-) */
+  transform: rotate(180deg);
+}
+.job-filter-form {
+    margin-bottom: 3rem;
+}
+.job-filter-form select {
+    width: 28%;
+    padding: 0.6rem 0.8rem;
+    margin-right: 1rem;
+    border: 2px solid #ff4438 !important;
+}
+.job-filter-form input.filter-search {
+    width: 39%;
+    padding: 0.6rem 0.8rem;
+    border: 2px solid #ff4438;
+}
+.job-title a:hover {
+    text-decoration: underline;
+}
+.job-title a {
+    font-weight: 700;
+}
+.job-location {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+}
+.job-opening-filter {
+    text-align: center;
+}
+</style>
