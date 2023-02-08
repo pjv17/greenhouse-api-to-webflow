@@ -1,5 +1,5 @@
 # greenhouse-api-to-webflow
-- Retrieve Job Board Listing in Greenhouse.io
+- Retrieve Job Board Listing using Greenhouse.io API
 - Filter by Categories, Locations and search function
 
 Inspired by Robinhood career page - https://careers.robinhood.com/
