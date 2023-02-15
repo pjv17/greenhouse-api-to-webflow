@@ -1,4 +1,4 @@
-# Greenhouse Job Board in Webflow with Javascript/jQuery
+# Greenhouse Job Board API with Javascript/jQuery
 - Retrieve Job Board Listing using Greenhouse.io API
 - Filter by Categories, Locations and search function
 
