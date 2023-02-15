@@ -1,16 +1,20 @@
-
+<script src="https://kit.fontawesome.com/e6243b7882.js" crossorigin="anonymous"></script>
 <script>
 jQuery(document).ready(function($){
-$.getJSON('https://boards-api.greenhouse.io/v1/boards/{board_token}/departments/', function(data) {
+$.getJSON('https://boards-api.greenhouse.io/v1/boards/frequence/departments/', function(data) {
         var output = '';
         var departments ='<option value="">All Departments</option>';
+				var locations ='<option value="">All Locations</option>';
+        let dept_set = new Set();
         $.each(data.departments, function(key, value) {
 				if(value.jobs.length > 0){
             departments += '<option value="'+value.id+'">'+value.name+'</option>';
             output += '<div class="accordion-contianer">';
-                 output += "<button class='accordion'>" + value.name + " <svg height='30' width='30' style='position: absolute;top: -15px;right: -24px;font-size: 20px;'>  <circle cx='10' cy='15' r='4' stroke='#f54036' stroke-width='2' fill='transparent'></circle>  Sorry, your browser does not support inline SVG.  </svg></button>";
+                 output += "<button class='accordion'>" + value.name + " <svg height='30' width='30' style='position: absolute;top: -15px;right: -24px;font-size: 20px;'>  <circle cx='12' cy='15' r='6' stroke='#f54036' stroke-width='1' fill='transparent'></circle>  Sorry, your browser does not support inline SVG.  </svg></button>";
                  output += '<div class="panel">';
                 $.each(value.jobs, function(key, value) {
+									let locations = value.location.name.split('|');
+        					$.each(locations, (i, loc) => dept_set.add($.trim(loc)));
                   output += '<div class="job-title"><a target="_blank" href="'+value.absolute_url+'">' + value.title + '</a></div>';
                   output += '<div class="job-location">' + value.location.name + '</div>';
             });
@@ -18,9 +22,13 @@ $.getJSON('https://boards-api.greenhouse.io/v1/boards/{board_token}/departments/
              output += '</div>';
         	}
           });
-          
+          let dept_arr = [...dept_set]; 
+          $.each(dept_arr, function(key, loc) {
+              locations += '<option value="'+loc+'">'+loc+'</option>';
+          });
           $('#root').html(output);
           $('select.filter-department').html(departments);
+  				$('select.filter-location').html(locations);
           $('.accordion').on("click", function() {
             $(this).toggleClass("active");
             $(this).next().slideToggle(200);
@@ -28,7 +36,7 @@ $.getJSON('https://boards-api.greenhouse.io/v1/boards/{board_token}/departments/
         
 });
 $('.filter-department, select.filter-location, input.filter-search').on('change keyup', function() {
-  $.getJSON('https://boards-api.greenhouse.io/v1/boards/{board_token}/departments/', function(data) {
+  $.getJSON('https://boards-api.greenhouse.io/v1/boards/frequence/departments/', function(data) {
   const search_term = $('input.filter-search').val().toString();
   const search = search_term.toUpperCase();
   const getDepartments = $('select.filter-department').val().toString();
@@ -37,17 +45,17 @@ $('.filter-department, select.filter-location, input.filter-search').on('change 
     const matches = data.departments.filter(department => {
       const dept_name = department.id.toString().toUpperCase().indexOf(getDepartments) >= 0;
       const job_location = department.jobs.some(job=> job.location.name.indexOf(getLocations) >= 0); 
-      const search_job_data = ( department.jobs.some(job => job.title.toUpperCase().indexOf(search) >= 0) ||  department.jobs.some(job=> job.location.name.indexOf(search) >= 0) || department.id.toString().toUpperCase().indexOf(search) >= 0 ); 
+      const search_job_data = ( department.jobs.some(job => job.title.toUpperCase().indexOf(search) >= 0) || department.jobs.some(job=> job.location.name.indexOf(search) >= 0) || department.name.toString().toUpperCase().indexOf(search) >= 0 ); 
       return dept_name && job_location && search_job_data;
     });
     var output = '';
 		if(matches.length > 0){
       $.each(matches, function(key, value) {       
         output += '<div class="accordion-contianer">';
-        output += "<button class='accordion active'>" + value.name + " <svg height='30' width='30' style='position: absolute;top: -15px;right: -24px;font-size: 20px;'>  <circle cx='10' cy='15' r='4' stroke='#f54036' stroke-width='2' fill='transparent'></circle>  Sorry, your browser does not support inline SVG.  </svg></button>";
+        output += "<button class='accordion active'>" + value.name + " <svg height='30' width='30' style='position: absolute;top: -15px;right: -24px;font-size: 20px;'>  <circle cx='12' cy='15' r='6' stroke='#f54036' stroke-width='1' fill='transparent'></circle>  Sorry, your browser does not support inline SVG.  </svg></button>";
         output += '<div class="panel" style="display: block;">';
         $.each(value.jobs, function(key, value) {
-        	if(value.location.name.includes(getLocations)){
+        	if(value.location.name.includes(getLocations) || value.location.name.includes(search) || value.title.includes(search) ){
             output += '<div class="job-title"><a target="_blank" href="'+value.absolute_url+'">' + value.title + '</a></div>';
             output += '<div class="job-location">' + value.location.name + '</div>';
           }
@@ -58,7 +66,7 @@ $('.filter-department, select.filter-location, input.filter-search').on('change 
       });
     }else{
      output += '<div class="accordion-contianer">';
-     output += '<h2>Sorry, no jobs were found for that criteria.</h2>';
+     output += '<h4 style="margin-bottom: 2rem;">Sorry, no jobs were found for that criteria.</h4>';
      output += '</div>';
     }
     
@@ -69,12 +77,27 @@ $('.filter-department, select.filter-location, input.filter-search').on('change 
     });
   });
 });
+
+  $("a").on('click', function(event) {
+
+    if (this.hash !== "") {
+      var hash = this.hash;
+      $('html, body').animate({
+        scrollTop: $(hash).offset().top
+      }, 2000, function() {
+        window.location.hash = hash;
+      });
+      return false;
+    }
+  });
+
 });
 </script>
+
 <style>
 #root .accordion {
     background-color: #fff;
-    color: #444;
+    color: #07293A;
     cursor: pointer;
     padding: 1.5rem 0;
     width: 100%;
@@ -82,7 +105,7 @@ $('.filter-department, select.filter-location, input.filter-search').on('change 
     border: none;
     outline: none;
     transition: 0.4s;
-    border-top: 3px solid #f54036;
+    border-top: 1px solid #f54036;
     font-size: 1.5rem;
 		position: relative;
     font-weight: 700;
@@ -95,17 +118,17 @@ $('.filter-department, select.filter-location, input.filter-search').on('change 
   background-color: white;
   display: none;
   overflow: hidden;
+  color: #07293A;
 }
 #root .accordion:after {
-  /* Unicode character for “plus” sign (+) */
-  content: url('https://uploads-ssl.webflow.com/637c2f301f6fd3d4dd877342/63e194d2923b771d2bb7bb43_down-orange.png');
-  font-size: 13px;
-  color: #777;
-  float: right;
-  margin-left: 5px;
+    content: "\f063";
+    position: absolute;
+    font-family: 'Font Awesome\ 5 Free';
+    right: -16px !important;
+    color: #ff4438;
+    -webkit-text-stroke:1.5px white;
 }
 #root .active:after {
-  /* Unicode character for “minus” sign (-) */
   transform: rotate(180deg);
 }
 .job-filter-form {
@@ -115,18 +138,28 @@ $('.filter-department, select.filter-location, input.filter-search').on('change 
     width: 28%;
     padding: 0.6rem 0.8rem;
     margin-right: 1rem;
-    border: 2px solid #ff4438 !important;
+    border: 1.5px solid #ff4438 !important;
+    border-radius: 10px;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-color: #fafafa;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAUCAMAAACtdX32AAAAdVBMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhMdQaAAAAJ3RSTlMAAAECAwQGBwsOFBwkJTg5RUZ4eYCHkJefpaytrsXGy8zW3+Do8vNn0bsyAAAAYElEQVR42tXROwJDQAAA0Ymw1p9kiT+L5P5HVEi3qJn2lcPjtIuzUIJ/rhIGy762N3XaThqMN1ZPALsZPEzG1x8LrFL77DHBnEMxBewz0fJ6LyFHTPL7xhwzWYrJ9z22AqmQBV757MHfAAAAAElFTkSuQmCC);
+    background-position: 100%;
+    background-size: 24px;
+    background-repeat: no-repeat;
 }
 .job-filter-form input.filter-search {
     width: 39%;
-    padding: 0.6rem 0.8rem;
-    border: 2px solid #ff4438;
+    padding: 0.7rem 0.8rem;
+    border: 1.5px solid #ff4438;
+    border-radius: 10px;
 }
 .job-title a:hover {
     text-decoration: underline;
 }
 .job-title a {
     font-weight: 700;
+    color: #07293A;
 }
 .job-location {
     margin-bottom: 1rem;
@@ -134,5 +167,17 @@ $('.filter-department, select.filter-location, input.filter-search').on('change 
 }
 .job-opening-filter {
     text-align: center;
+}
+.job-opening-lists {
+    padding-right: 0.9rem;
+}
+@media only screen and (max-width: 768px) {
+  div#careers-section {
+    padding: 0px 2rem;
+  }
+  .job-filter-form select, .job-filter-form input {
+      margin-bottom: 1rem;
+      width: 100% !important;
+  }
 }
 </style>
