@@ -55,7 +55,7 @@ $('.filter-department, select.filter-location, input.filter-search').on('change 
         output += "<button class='accordion active'>" + value.name + " <svg height='30' width='30' style='position: absolute;top: -15px;right: -24px;font-size: 20px;'>  <circle cx='12' cy='15' r='6' stroke='#f54036' stroke-width='1' fill='transparent'></circle>  Sorry, your browser does not support inline SVG.  </svg></button>";
         output += '<div class="panel" style="display: block;">';
         $.each(value.jobs, function(key, value) {
-        	if(value.location.name.includes(getLocations) || value.location.name.includes(search) || value.title.includes(search) ){
+        	if(value.location.name.includes(getLocations)){
             output += '<div class="job-title"><a target="_blank" href="'+value.absolute_url+'">' + value.title + '</a></div>';
             output += '<div class="job-location">' + value.location.name + '</div>';
           }
