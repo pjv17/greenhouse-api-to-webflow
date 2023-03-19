@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+
+<head>
+    <script src="https://raw.githubusercontent.com/lodash/lodash/4.17.15-npm/core.js" type="text/json" crossorigin="anonymous"></script>
+<meta charset="UTF-8">
+    <title>Greenhouse Job Board</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/e6243b7882.js" crossorigin="anonymous"></script>
+    <script src="greenhouse-api.js"></script>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>Greenhouse API</h1>
+        <div class="job-filter-form">
+            <p style=" text-align: left;padding: .5rem .05rem;">Filter By: </p>
+            <select class="filter-department form-select form-select-lg mb-3" name="department"><option value="">All Departments</option></select>
+            <select class="filter-location form-select form-select-lg mb-3" name="location"><option value="">All Locations</option></select>
+            <input class="filter-search form-input form-input-lg mb-3" type="text" name="search-job" placeholder="Search">
+        </div>   
+        
+        <div id="root">
+        </div>      
+
+    </div>
+ 
+<style>
+  #root .accordion {
+    background-color: #fff;
+    color: #07293A;
+    cursor: pointer;
+    padding: 1.5rem 0;
+    width: 99%;
+    text-align: left;
+    border: none;
+    outline: none;
+    transition: 0.4s;
+    border-top: 1px solid #f54036;
+    font-size: 1.5rem;
+    position: relative;
+    font-weight: 700;
+  }
+  #root .active, #root .accordion:hover {
+    background-color: #fff;
+  }
+  #root .panel {
+    padding: 0 16px;
+    background-color: white;
+    display: none;
+    overflow: hidden;
+    color: #07293A;
+  }
+  #root .accordion:after {
+    content: "\f063";
+    position: absolute;
+    font-family: 'Font Awesome\ 5 Free';
+    right: -16px !important;
+    color: #ff4438;
+    -webkit-text-stroke:1.5px white;
+  }
+  #root .active:after {
+    transform: rotate(180deg);
+  }
+  .job-filter-form {
+    margin-bottom: 3rem;
+  }
+  .job-filter-form select {
+    width: 28%;
+    padding: 0.6rem 0.8rem;
+    margin-right: 1%;
+    border: 1.5px solid #ff4438 !important;
+    border-radius: 10px;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    background-color: #ffffff;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAUCAMAAACtdX32AAAAdVBMVEUAAAD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAhMdQaAAAAJ3RSTlMAAAECAwQGBwsOFBwkJTg5RUZ4eYCHkJefpaytrsXGy8zW3+Do8vNn0bsyAAAAYElEQVR42tXROwJDQAAA0Ymw1p9kiT+L5P5HVEi3qJn2lcPjtIuzUIJ/rhIGy762N3XaThqMN1ZPALsZPEzG1x8LrFL77DHBnEMxBewz0fJ6LyFHTPL7xhwzWYrJ9z22AqmQBV757MHfAAAAAElFTkSuQmCC);
+    background-position: 100%;
+    background-size: 24px;
+    background-repeat: no-repeat;
+  }
+  .job-filter-form input.filter-search {
+    width: 40.2%;
+    padding: 0.7rem 0.8rem;
+    border: 1.5px solid #ff4438;
+    border-radius: 10px;
+  }
+  .job-title a:hover {
+    text-decoration: underline;
+  }
+  .job-title a {
+    font-weight: 700;
+    color: #07293A;
+  }
+  .job-location {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+  }
+  .job-opening-filter {
+    text-align: center;
+  }
+  .job-opening-lists {
+    padding-right: 0.9rem;
+  }
+  @media only screen and (max-width: 768px) {
+    div#careers-section {
+      padding: 0px 2rem;
+    }
+    .job-filter-form select, .job-filter-form input {
+      margin-bottom: 1rem;
+      width: 100% !important;
+    }
+  }
+</style>
+
+</body>
+
+<footer>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js" integrity="sha512-WFN04846sdKMIP5LKNphMaWzU7YpMyCU245etK3g/2ARYbPK9Ub18eG+ljU96qKRCWh+quCY7yefSmlkQw1ANQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  </footer>
+
+</html>
